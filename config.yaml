@@ -1,0 +1,74 @@
+# Agent Loop Framework Configuration
+# Phase 1 — Minimum viable agent memory architecture
+
+# --- Model ---
+model:
+  provider: "openrouter"          # openrouter, anthropic, openai, local
+  model_id: "anthropic/claude-sonnet-4.6"
+  api_base: "https://openrouter.ai/api/v1"
+  # api_key loaded from environment: AGENT_LOOP_API_KEY
+
+# --- Context Limits ---
+context:
+  max_tokens: 128000              # total model context window; budgeting reserves part of this for the model's reply
+  hot_memory_cap: 4000            # max tokens allowed for always-loaded hot memory after compression
+  warn_threshold: 0.70            # log a context pressure warning when prompt usage reaches this fraction of usable budget
+  rotate_threshold: 0.80          # stop and rotate when prompt growth reaches this fraction of usable budget
+
+# --- Loop Safety ---
+loop:
+  max_iterations: 20              # hard stop after N iterations
+  max_rotations: 5                # allow this many in-process context refreshes before exiting for real
+  max_cost_usd: 2.00              # hard stop after $X spent this run
+  cooldown_seconds: 5             # pause between iterations
+  completion_signal: "SESSION_COMPLETE"  # agent outputs this when done
+
+# --- Session ---
+session:
+  summary_on_rotate: true         # write session summary before rotating
+  summary_on_complete: true       # write session summary when done
+  log_sessions: true              # save full session logs
+
+# --- Discord Bot (Optional) ---
+# discord:
+#   max_history: 20               # messages before auto-summarization
+#   history_token_limit: 8000     # token budget for conversation history
+#   command_prefix: "!"           # prefix for bot commands
+
+# --- Memory Tiers ---
+# search_provider: keyword         # options: keyword, vector (Phase 3)
+memory:
+  hot_dir: "memory/hot"           # always loaded, hard capped
+  warm_dir: "memory/warm"         # searchable, loaded on demand
+  cold_dir: "memory/cold"         # archived, manual access only
+
+# --- OCR ---
+# ocr:
+#   provider: "openrouter"       # openrouter or local
+#   model: "qwen/qwen3.5-9b"
+#   local_endpoint: "http://localhost:1234/v1/chat/completions"
+#   default_save_dir: "memory/cold/family/documents"
+#   dpi: 150
+#   max_workers: 8
+
+# --- Paths ---
+paths:
+  manifests: "manifests"
+  projects: "projects"
+  scripts: "scripts"
+  cache: "cache"
+  logs: "logs"
+  prompts: "prompts"
+  state: "state"
+
+# --- Scheduling (Phase 2) ---
+schedule:
+  quiet_hours_start: "23:00"       # skip scheduled runs during this local-time window unless forced
+  quiet_hours_end: "06:00"         # supports overnight ranges such as 23:00 -> 06:00
+  timezone: "America/Chicago"      # used when installing cron entries via scheduler.sh
+  llm_model_id: "deepseek/deepseek-v3.2"  # scheduled LLM work uses a cheaper model than chat/orchestration
+  llm_api_base: "https://openrouter.ai/api/v1"
+  tasks:
+    demotion: "0 3 1 * *"          # 3am on the 1st of each month
+    promotion: "30 */6 * * *"      # every 6 hours at :30
+    morning-brief: "0 6 * * *"     # 6am daily

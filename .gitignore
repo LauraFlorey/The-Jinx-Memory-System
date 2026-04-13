@@ -1,0 +1,16 @@
+# Environment
+.env
+.env.local
+.venv/
+
+# Ephemeral
+cache/
+logs/
+__pycache__/
+*.pyc
+
+# State files are tracked (they're the point)
+# But session summaries get overwritten so they're fine in git
+
+# OS
+.DS_Store

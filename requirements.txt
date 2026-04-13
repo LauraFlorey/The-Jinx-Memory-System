@@ -1,0 +1,9 @@
+discord.py
+aiohttp
+PyYAML
+beautifulsoup4
+youtube-transcript-api
+pytube
+PyMuPDF
+Pillow
+httpx
