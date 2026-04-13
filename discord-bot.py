@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Discord interface for the Jinx agent loop framework."""
+"""Discord interface for the agent loop framework."""
 
 from __future__ import annotations
 
@@ -39,7 +39,7 @@ STATE_DIR = ROOT / "state"
 HOT_MEMORY_DIR = ROOT / "memory" / "hot"
 LOG_PATH = ROOT / "logs" / "discord-bot.log"
 
-DEFAULT_MANIFEST = "manifests/jinx-full.md"
+DEFAULT_MANIFEST = "manifests/agent-full.md"
 DEFAULT_HISTORY_LIMIT = 20
 RECENT_HISTORY_KEEP = 8
 RESERVED_RESPONSE_TOKENS = 4096
@@ -813,7 +813,7 @@ class DiscordAgentClient(discord.Client):
             if not argument:
                 await self.send_chunked_message(
                     message.channel,
-                    "Usage: `!manifest <name>` (example: `!manifest jinx-brief`).",
+                    "Usage: `!manifest <name>` (example: `!manifest agent-brief`).",
                 )
                 return
 
